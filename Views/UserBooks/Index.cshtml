@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Workshop.Models.UserBooks>
+
+@{
+    ViewData["Title"] = "My Books";
+}
+
+<h1 class="mb-4">My Books</h1>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@Html.DisplayFor(modelItem => item.books.FrontPage)" class="card-img-top" alt="Book Cover" width="512px" height="512px">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.books.Title)</h5>
+                    <p class="card-text">@Html.DisplayFor(modelItem => item.books.author.FullName)</p>
+                    <a href="@Html.DisplayFor(modelItem => item.books.DownloadUrl)">Download</a>
+                    <form asp-controller="Reviews" asp-action="Create" method="post" >
+                     <input type="hidden" name="AppUser" value="@User.Identity.Name" />
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-plus"></i>Add Review</button>
+                    </form>
+                </div>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i> Remove</a>
+            </div>
+        </div>
+    }
+</div>

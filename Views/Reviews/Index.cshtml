@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Workshop.Models.Review>
+
+@{
+    ViewData["Title"] = "Reviews";
+}
+
+<h1>Reviews</h1>
+
+<p>
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+    {
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    }
+</p>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Book.Title)</h5>
+                    <p class="card-text">User: @Html.DisplayFor(modelItem => item.AppUser)</p>
+                    <p class="card-text">@Html.DisplayFor(modelItem => item.Comment)</p>
+                    <p class="card-text">Rating: @Html.DisplayFor(modelItem => item.rating)</p>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info"><i class="bi bi-info-circle"></i> Details</a>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

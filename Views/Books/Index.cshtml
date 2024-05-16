@@ -1,0 +1,104 @@
+﻿@model IEnumerable<Workshop.Models.Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="mb-4">Books</h1>
+
+<p class="mb-4">
+    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+    {
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+    }
+</p>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <input type="text" name="searchString" class="form-control" placeholder="Search by Title">
+        </div>
+        <div class="col-md-3 mb-2">
+            <select name="authorId" class="form-control">
+                <option value="">All Authors</option>
+                @foreach (var author in ViewBag.Authors)
+                {
+                    <option value="@author.Id">@author.FullName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <label>Genres:</label><br />
+            @foreach (var genre in ViewBag.Genres)
+            {
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="genre_@genre.Id" name="genreIds" value="@genre.Id">
+                    <label class="form-check-label" for="genre_@genre.Id">@genre.GenreName</label>
+                </div>
+            }
+        </div>
+    </div>
+</form>
+
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@Html.DisplayFor(modelItem => item.FrontPage)" class="card-img-top" alt="Book Cover" width="512px" height="512px">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    <p class="card-text">@Html.DisplayFor(modelItem => item.author.FullName)</p>
+                    <p class="card-text">Year Published: @Html.DisplayFor(modelItem => item.YearPublished)</p>
+                    <p class="card-text">
+                        <strong>Genres:</strong>
+                        <span>
+                            @foreach (var genre in item.Genres)
+                            {
+                                <span class="badge bg-secondary">@genre.genre.GenreName</span>
+                            }
+                        </span>
+                    </p>
+                    <p class="card-text">
+                        @if (ViewBag.AverageRatings != null && ViewBag.AverageRatings.ContainsKey(item.Id))
+                        {
+                            var averageRating = ViewBag.AverageRatings[item.Id];
+                            <span class="badge bg-info">Average Rating: @averageRating.ToString("0.00")</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No Rating</span>
+                        }
+                    </p>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="UserBooks" asp-action="Create" method="post">
+                            <input type="hidden" name="AppUser" value="@User.Identity.Name" />
+                            <input type="hidden" name="BookId" value="@item.Id" />
+                            <button type="submit" class="btn btn-success"><i class="bi bi-plus"></i>Buy</button>
+                        </form>
+                    }
+
+                </div>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+                }
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info"><i class="bi bi-info-circle"></i> Details</a>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                {
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</a>
+                }
+            </div>
+        </div>
+    }
+</div>
